@@ -35,6 +35,10 @@ rc-update add connmand
 
 pacman -S intel-ucode --noconfirm
 
+SMFSUWER=$(blkid -s PARTUUID -o value /dev/$root_drive)
+POWERSMFSUWER='GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet options root='$SMFSUWER' rw nvidia-drm.modeset=1 intel_iommu=on"'
+sed -i "s/GRUB_CMDLINE_LINUX_DEF\(.*\)/$POWERSMFSUWER/g" /etc/default/grub
+
 grub-mkconfig -o /boot/grub/grub.cfg
 
 pacman -S linux-headers --noconfirm
