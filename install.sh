@@ -43,6 +43,7 @@ export root_drive
 export swap_drive
 export boot_drive
 export _hostname
+export _username
 export _rootpasswd
 export _userpasswd
 
