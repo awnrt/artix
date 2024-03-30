@@ -9,6 +9,8 @@ echo LANG=en_US.UTF-8 > /etc/locale.conf
 export LANG="en_US.UTF-8"
 export LC_COLLATE="C"
 
+echo $_hostname > /etc/hostname
+
 pacman -S grub os-prober efibootmgr --noconfirm
 
 grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub
@@ -24,7 +26,7 @@ echo $_username:$_userpasswd | chpasswd
 echo "%wheel ALL=(ALL) ALL" >> /etc/sudoers
 echo "Defaults rootpw" >> /etc/sudoers
 
-echo $_hostname > /etc/hostname
+
 
 echo "[lib32]" >> /etc/pacman.conf
 echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
