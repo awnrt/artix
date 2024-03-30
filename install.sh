@@ -30,7 +30,8 @@ rc-service ntpd start
 pacman -Sy --confirm
 pacman -S pacman-contrib --noconfirm
 
-rankmirrors -n 6 /etc/pacman.d/mirrorlist > /etc/pacman.d/mirrorlist
+cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
+rankmirrors -n 6 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
 
 basestrap /mnt base base-devel openrc elogind-openrc
 basestrap /mnt linux linux-firmware
