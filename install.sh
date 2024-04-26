@@ -25,7 +25,10 @@ mkdir /mnt/home
 mkdir /mnt/boot/efi
 mount /dev/$boot_drive /mnt/boot/efi
 
-rc-service ntpd start
+Openrc or dinit
+#rc-service ntpd start
+dinitctl start ntpd
+
 
 pacman -Sy --confirm
 pacman -S pacman-contrib --noconfirm
