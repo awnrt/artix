@@ -30,8 +30,11 @@ echo "[lib32]" >> /etc/pacman.conf
 echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
 pacman -Sy --noconfirm
 
-pacman -S dhcpcd dhcpcd-openrc --noconfirm
-rc-update add dhcpcd default
+#Openrc or dinit
+#pacman -S dhcpcd dhcpcd-openrc --noconfirm
+#rc-update add dhcpcd default
+pacman -S dhcpcd dhcpcd-dinit --noconfirm
+dinitctl enable dhcpcd
 
 pacman -S intel-ucode --noconfirm
 

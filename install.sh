@@ -32,8 +32,9 @@ pacman -S pacman-contrib --noconfirm
 
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
 rankmirrors -n 6 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
-
-basestrap /mnt base base-devel openrc elogind-openrc
+#Choose openrc or dinit
+#basestrap /mnt base base-devel openrc elogind-openrc
+basestrap /mnt base base-devel dinit elogind-dinit
 basestrap /mnt linux linux-firmware
 fstabgen -U /mnt >> /mnt/etc/fstab
 
