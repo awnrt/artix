@@ -1,7 +1,7 @@
 pacman -Sy bash-completion --noconfirm
 ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
 hwclock --systohc
-
+echo "options hid_apple fnmode=0" > /etc/modprobe.d/hid_apple.conf
 echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
 locale-gen
 
