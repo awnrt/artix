@@ -25,19 +25,11 @@ mkdir /mnt/home
 mkdir /mnt/boot/efi
 mount /dev/$boot_drive /mnt/boot/efi
 
-#Openrc or dinit
-#rc-service ntpd start
-dinitctl start ntpd
-
+sv up ntpd
 
 pacman -Sy --confirm
-pacman -S pacman-contrib --noconfirm
 
-#cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
-#rankmirrors -n 6 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
-#Choose openrc or dinit
-#basestrap /mnt base base-devel openrc elogind-openrc
-basestrap /mnt base base-devel dinit elogind-dinit
+basestrap /mnt base base-devel runit elogind-runit
 basestrap /mnt linux linux-firmware
 fstabgen -U /mnt >> /mnt/etc/fstab
 

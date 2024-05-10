@@ -1,8 +1,10 @@
 pacman -Sy bash-completion --noconfirm
 ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
 hwclock --systohc
+mkdir -p /etc/modprobe.d/
 echo "options hid_apple fnmode=0" > /etc/modprobe.d/hid_apple.conf
-echo en_US.UTF-8 UTF-8 >> /etc/locale.gen
+echo 'options nvidia NVreg_RegistryDwords="PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerLevel=0x3; PowerMizerDefault=0x3; PowerMizerDefaultAC=0x3"' > /etc/modprobe.d/nvidia.conf
+sed -i -e "/^#"en_US.UTF-8"/s/^#//" /etc/locale.gen
 locale-gen
 
 echo LANG=en_US.UTF-8 > /etc/locale.conf
@@ -30,11 +32,8 @@ echo "[lib32]" >> /etc/pacman.conf
 echo "Include = /etc/pacman.d/mirrorlist" >> /etc/pacman.conf
 pacman -Sy --noconfirm
 
-#Openrc or dinit
-#pacman -S dhcpcd dhcpcd-openrc --noconfirm
-#rc-update add dhcpcd default
-pacman -S dhcpcd dhcpcd-dinit --noconfirm
-dinitctl enable dhcpcd
+pacman -S dhcpcd dhcpcd-runit --noconfirm
+ln -s /etc/runit/sv/dhcpcd /etc/runit/runsvdir/default
 
 pacman -S intel-ucode --noconfirm
 
@@ -48,11 +47,7 @@ pacman -S linux-headers --noconfirm
 pacman -S trizen --noconfirm
 pacman -S nvidia-dkms nvidia-utils opencl-nvidia lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings libxnvctrl  --noconfirm
 
-#trizen -S nvidia-535xx-utils nvidia-535xx-dkms opencl-nvidia-535xx lib32-opencl-nvidia-535xx lib32-nvidia-535xx-utils nvidia-535xx-settings libxnvctrl-535xx
-
-
 sudo sed -i -e 's/MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g' /etc/mkinitcpio.conf
-
 
 mkdir /etc/pacman.d/hooks
 echo "[Trigger]" >> /etc/pacman.d/hooks/nvidia
