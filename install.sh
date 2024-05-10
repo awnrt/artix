@@ -29,7 +29,7 @@ sv up ntpd
 
 pacman -Sy --confirm
 
-basestrap /mnt base base-devel runit elogind-runit
+basestrap /mnt base base-devel runit seatd-runit
 basestrap /mnt linux linux-firmware
 fstabgen -U /mnt >> /mnt/etc/fstab
 
