@@ -3,7 +3,9 @@ ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
 hwclock --systohc
 mkdir -p /etc/modprobe.d/
 echo "options hid_apple fnmode=0" > /etc/modprobe.d/hid_apple.conf
-echo 'options nvidia NVreg_RegistryDwords="PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerLevel=0x3; PowerMizerDefault=0x3; PowerMizerDefaultAC=0x3"' > /etc/modprobe.d/nvidia.conf
+echo 'options nvidia NVreg_UsePageAttributeTable=1' >> /etc/modprobe.d/nvidia.conf
+echo 'options nvidia-drm fbdev=1' >> /etc/modprobe.d/nvidia.conf
+echo 'options nvidia NVreg_RegistryDwords="PowerMizerEnable=0x1; PerfLevelSrc=0x2222; PowerMizerLevel=0x3; PowerMizerDefault=0x3; PowerMizerDefaultAC=0x3"' >> /etc/modprobe.d/nvidia.conf
 sed -i -e "/^#"en_US.UTF-8"/s/^#//" /etc/locale.gen
 locale-gen
 
@@ -38,7 +40,7 @@ ln -s /etc/runit/sv/dhcpcd /etc/runit/runsvdir/default
 pacman -S intel-ucode --noconfirm
 
 SMFSUWER=$(blkid -s PARTUUID -o value /dev/$root_drive)
-POWERSMFSUWER='GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet options root=PARTUUID='$SMFSUWER' rw nvidia-drm.modeset=1 intel_iommu=on"'
+POWERSMFSUWER='GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet options root=PARTUUID='$SMFSUWER' rw nvidia-drm.modeset=1 modeset=1 fbdev=1 intel_iommu=on"'
 sed -i "s/GRUB_CMDLINE_LINUX_DEF\(.*\)/$POWERSMFSUWER/g" /etc/default/grub
 
 grub-mkconfig -o /boot/grub/grub.cfg
