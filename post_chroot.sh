@@ -47,7 +47,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 pacman -S linux-headers --noconfirm
 pacman -S trizen --noconfirm
-pacman -S nvidia-dkms nvidia-utils opencl-nvidia lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings libxnvctrl  --noconfirm
+pacman -S nvidia-open-dkms nvidia-utils opencl-nvidia lib32-nvidia-utils lib32-opencl-nvidia nvidia-settings libxnvctrl  --noconfirm
 
 sudo sed -i -e 's/MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g' /etc/mkinitcpio.conf
 
