@@ -10,9 +10,9 @@ read -p "Hostname: " _hostname
 
 read -p "Username: " _username
 
-read -p "root password: " _rootpasswd
+read -s -p "root password: " _rootpasswd
 
-read -p "user password: " _userpasswd
+read -s -p "user password: " _userpasswd
 
 mkfs.ext4 /dev/$root_drive
 #mkswap /dev/$swap_drive
