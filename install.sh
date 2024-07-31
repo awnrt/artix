@@ -34,7 +34,7 @@ mount /dev/$boot_drive /mnt/boot/efi
 sv up ntpd
 pacman -Sy --confirm
 
-basestrap /mnt base runit seatd-runit linux-zen intel-ucode linux-zen-headers 
+basestrap /mnt base runit seatd-runit linux-zen linux-zen-headers 
 fstabgen -U /mnt >> /mnt/etc/fstab
 
 cp post_chroot.sh /mnt
