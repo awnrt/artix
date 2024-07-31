@@ -18,15 +18,15 @@ export LC_COLLATE="C"
 
 echo $_hostname > /etc/hostname
 
-pacman -S grub os-prober efibootmgr --noconfirm
-
-grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub
-
 useradd -m -g users -G wheel,storage,power -s /bin/bash $_username
 
 echo root:$_rootpasswd | chpasswd
 echo $_username:$_userpasswd | chpasswd
 
+pacman -Sy --noconfirm
+pacman -S artix-archlinux-support --noconfirm
+echo "[extra]" >> /etc/pacman.conf
+echo "Include = /etc/pacman.d/mirrorlist-arch" >> /etc/pacman.conf
 pacman -Sy --noconfirm
 
 pacman -S doas --noconfirm
@@ -45,8 +45,9 @@ sed -i "s/GRUB_CMDLINE_LINUX_DEF\(.*\)/$POWERSMFSUWER/g" /etc/default/grub
 
 pacman -S linux-zen-headers --noconfirm
 pacman -S trizen --noconfirm
-pacman -S nvidia-open-dkms --noconfirm
+pacman -S nvidia-open-dkms trizen grub os-prober efibootmgr --noconfirm
 sed -i -e 's/MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g' /etc/mkinitcpio.conf
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub
 grub-mkconfig -o /boot/grub/grub.cfg
 
 rm /post_chroot.sh
