@@ -1,23 +1,29 @@
-read -p "Enter disk label (e.g., sda): " disk_drive
-read -p "Enter comma-separated partition numbers (e.g., 5,6 for 5 boot 6 root): " partitions
-IFS=',' read -r -a partition_array <<< "$partitions"
+LIGHTGREEN='\033[1;32m'
+LIGHTRED='\033[1;91m'
+WHITE='\033[1;97m'
+MAGENTA='\033[1;35m'
+CYAN='\033[1;96m'
+NoColor='\033[0m'
 
+printf ${LIGHTGREEN}"Enter disk label (e.g. sda, nvme0n1p <- p is mandatory in nvme case):${NoColor}\n"
+read disk_drive
+printf ${LIGHTGREEN}"Enter comma-separated partition numbers (e.g., 5,6 for 5 boot 6 root):${NoColor}\n"
+read partitions
+IFS=',' read -r -a partition_array <<< "$partitions"
 root_drive="$disk_drive${partition_array[1]}"
-#swap_drive="$disk_drive${partition_array[1]}"
 boot_drive="$disk_drive${partition_array[0]}"
 
-read -p "Hostname: " _hostname
+printf ${LIGHTGREEN}"Enter the Hostname you want to use:${NoColor}\n"
+read _hostname
+printf ${LIGHTGREEN}"Enter the Username you want to use:${NoColor}\n"
+read _username
+printf ${LIGHTRED}"Enter the password for ROOT:${NoColor}\n"
+read -s _rootpasswd
+printf ${LIGHTGREEN}"Enter the password for $_username:${NoColor}\n"
+read -s _userpasswd
 
-read -p "Username: " _username
-
-read -s -p "root password: " _rootpasswd
-
-read -s -p "user password: " _userpasswd
-
-mkfs.ext4 /dev/$root_drive
-#mkswap /dev/$swap_drive
-#swapon /dev/$swap_drive
-mkfs.fat -F 32 /dev/$boot_drive
+mkfs.fat -F32 /dev/$boot_drive
+mkfs.ext4 -F /dev/$root_drive
 
 mount /dev/$root_drive /mnt
 mkdir /mnt/boot
@@ -26,17 +32,14 @@ mkdir /mnt/boot/efi
 mount /dev/$boot_drive /mnt/boot/efi
 
 sv up ntpd
-
 pacman -Sy --confirm
 
-basestrap /mnt base base-devel runit seatd-runit
-basestrap /mnt linux linux-firmware
+basestrap /mnt base runit seatd-runit linux-zen intel-ucode linux-zen-headers 
 fstabgen -U /mnt >> /mnt/etc/fstab
 
 cp post_chroot.sh /mnt
 
 export root_drive
-#export swap_drive
 export boot_drive
 export _hostname
 export _username
