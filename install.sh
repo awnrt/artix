@@ -5,6 +5,9 @@ MAGENTA='\033[1;35m'
 CYAN='\033[1;96m'
 NoColor='\033[0m'
 
+printf ${LIGHTGREEN}"Do you want default linux-zen kernel or custom one?\nType 1 for default and 2 for custom:${NoColor}\n"
+read _kernelflag
+
 printf ${LIGHTGREEN}"Enter disk label (e.g. sda, nvme0n1p <- p is mandatory in nvme case):${NoColor}\n"
 read disk_drive
 printf ${LIGHTGREEN}"Enter comma-separated partition numbers (e.g., 5,6 for 5 boot 6 root):${NoColor}\n"
@@ -28,16 +31,26 @@ mkfs.ext4 -F /dev/$root_drive
 mount /dev/$root_drive /mnt
 mkdir /mnt/boot
 mkdir /mnt/home
-mkdir /mnt/boot/efi
-mount /dev/$boot_drive /mnt/boot/efi
 
-sv up ntpd
-pacman -Sy --confirm
-
-basestrap /mnt base runit seatd-runit linux-zen linux-zen-headers 
-fstabgen -U /mnt >> /mnt/etc/fstab
-
-cp post_chroot.sh /mnt
+if [ "$_kernelflag" -eq 1 ]; then
+  mkdir /mnt/boot/efi
+  mount /dev/$boot_drive /mnt/boot/efi
+  sv up ntpd
+  pacman -Sy --confirm
+  basestrap /mnt base runit seatd-runit linux-zen linux-zen-headers 
+  fstabgen -U /mnt >> /mnt/etc/fstab
+  cp post_chroot.sh /mnt
+elif [ "$_kernelflag" -eq 2 ]; then
+  mount /dev/$boot_drive /mnt/boot
+  sv up ntpd
+  pacman -Sy --confirm
+  basestrap /mnt base runit seatd-runit 
+  fstabgen -U /mnt >> /mnt/etc/fstab
+  cp post_chroot.sh /mnt
+else
+  printf ${LIGHTRED}"Wrong kernelflag value.${NoColor}\n"
+  exit 1
+fi
 
 export root_drive
 export boot_drive
@@ -45,5 +58,6 @@ export _hostname
 export _username
 export _rootpasswd
 export _userpasswd
+export _kernelflag
 
 artix-chroot /mnt ./post_chroot.sh
