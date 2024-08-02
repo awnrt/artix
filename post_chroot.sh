@@ -35,11 +35,13 @@ elif [ "$_kernelflag" -eq 2 ]; then
   curl -LO "https://codeberg.org/awy/artix/raw/branch/minimal/.config"
   sed -i -e '/^CONFIG_CMDLINE="root=PARTUUID=.*/c\' -e "CONFIG_CMDLINE=\"root=PARTUUID=$PARTUUID_ROOT\"" .config
   make menuconfig
-  make -j$(nproc)
-  make modules
-  make modules_install
-  make headers
-  make headers_install
+  #make -j$(nproc)
+  #make modules
+  #make modules_install
+  #make headers
+  #make headers_install
+  #cp arch/x86/boot/bzImage /boot/EFI/BOOT/BOOTX64.EFI
+  #efibootmgr -c -d /dev/nvme0n1 -p 1 -L "ARTIX" -l '\EFI\BOOT\BOOTX64.EFI'
 else
   printf ${LIGHTRED}"Wrong kernelflag value.${NoColor}\n"
   exit 1
