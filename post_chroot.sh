@@ -23,6 +23,8 @@ if [ "$_kernelflag" -eq 1 ]; then
   grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub
   GRUB_MODIFIED_LINE='GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet options root=PARTUUID='$PARTUUID_ROOT' rw nvidia-drm.modeset=1 modeset=1 fbdev=1 intel_iommu=on"'
   sed -i "s/GRUB_CMDLINE_LINUX_DEF\(.*\)/$GRUB_MODIFIED_LINE/g" /etc/default/grub
+  pacman -S linux-zen-headers --noconfirm
+  sed -i -e 's/MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g' /etc/mkinitcpio.conf
 elif [ "$_kernelflag" -eq 2 ]; then
   pacman -S efibootmgr --noconfirm
   cd /usr/src/
@@ -32,6 +34,12 @@ elif [ "$_kernelflag" -eq 2 ]; then
   cd "linux-6.10.2"
   curl -LO "https://codeberg.org/awy/artix/raw/branch/minimal/.config"
   sed -i -e '/^CONFIG_CMDLINE="root=PARTUUID=.*/c\' -e "CONFIG_CMDLINE=\"root=PARTUUID=$PARTUUID_ROOT\"" .config
+  make menuconfig
+  make -j$(nproc)
+  make modules
+  make modules_install
+  make headers
+  make headers_install
 else
   printf ${LIGHTRED}"Wrong kernelflag value.${NoColor}\n"
   exit 1
@@ -58,10 +66,10 @@ EOL
 pacman -S dhcpcd dhcpcd-runit --noconfirm
 ln -s /etc/runit/sv/dhcpcd /etc/runit/runsvdir/default
 
-pacman -S linux-zen-headers --noconfirm
 pacman -S nvidia-open-dkms nvidia-utils intel-ucode trizen --noconfirm
-sed -i -e 's/MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g' /etc/mkinitcpio.conf
 
-grub-mkconfig -o /boot/grub/grub.cfg
+if [ "$_kernelflag" -eq 1 ]; then
+  grub-mkconfig -o /boot/grub/grub.cfg
+fi
 
 rm /post_chroot.sh
