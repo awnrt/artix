@@ -34,6 +34,14 @@ elif [ "$_kernelflag" -eq 2 ]; then
   cd "linux-6.10.2"
   curl -LO "https://codeberg.org/awy/artix/raw/branch/minimal/.config"
   sed -i -e '/^CONFIG_CMDLINE="root=PARTUUID=.*/c\' -e "CONFIG_CMDLINE=\"root=PARTUUID=$PARTUUID_ROOT\"" .config
+  mkdir /etc/modules-load.d
+  cat <<EOL >> /etc/modules-load.d/video.conf
+  nvidia
+  nvidia_modeset
+  nvidia_uvm
+  nvidia_drm
+EOL
+  pacman -S bc perl bison
   make menuconfig
   #make -j$(nproc)
   #make modules

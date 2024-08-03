@@ -44,7 +44,7 @@ elif [ "$_kernelflag" -eq 2 ]; then
   mount /dev/$boot_drive /mnt/boot
   sv up ntpd
   pacman -Sy --confirm
-  basestrap /mnt base runit seatd-runit 
+  basestrap /mnt base runit seatd-runit udev 
   fstabgen -U /mnt >> /mnt/etc/fstab
   cp post_chroot.sh /mnt
 else
