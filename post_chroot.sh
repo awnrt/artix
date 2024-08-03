@@ -76,7 +76,7 @@ EOL
 pacman -S dhcpcd dhcpcd-runit --noconfirm
 ln -s /etc/runit/sv/dhcpcd /etc/runit/runsvdir/default
 
-pacman -S nvidia-open-dkms nvidia-utils intel-ucode trizen --noconfirm
+pacman -S nvidia-open-dkms nvidia-utils trizen --noconfirm
 
 if [ "$_kernelflag" -eq 1 ]; then
   grub-mkconfig -o /boot/grub/grub.cfg
