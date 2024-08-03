@@ -41,7 +41,7 @@ elif [ "$_kernelflag" -eq 2 ]; then
   nvidia_uvm
   nvidia_drm
 EOL
-  pacman -S bc perl bison make gcc flex --noconfirm
+  pacman -S bc perl bison make diffutils gcc flex rsync --noconfirm
   make menuconfig
   #make -j$(nproc)
   #make modules
