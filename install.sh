@@ -56,6 +56,9 @@ else
   exit 1
 fi
 
+_numBoot="${partition_array[0]}"
+export _numBoot
+
 export disk_drive
 export root_drive
 export boot_drive

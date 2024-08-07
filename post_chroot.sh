@@ -46,7 +46,7 @@ elif [ "$_kernelflag" -eq 2 ]; then
   mkdir -p /boot/EFI/BOOT
   cp arch/x86/boot/bzImage /boot/EFI/BOOT/BOOTX64.EFI
   _diskdrivewop="${diskdrive%p}"
-  efibootmgr -c -d /dev/$_diskdrivewop -p ${partition_array[0]} -L "linux" -l '\EFI\BOOT\BOOTX64.EFI'
+  efibootmgr -c -d /dev/$_diskdrivewop -p $_numBoot -L "linux" -l '\EFI\BOOT\BOOTX64.EFI'
 else
   printf ${LIGHTRED}"Wrong kernelflag value.${NoColor}\n"
   exit 1
