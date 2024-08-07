@@ -67,6 +67,5 @@ export _username
 export _rootpasswd
 export _userpasswd
 export _kernelflag
-export partitions
 
 artix-chroot /mnt ./post_chroot.sh
