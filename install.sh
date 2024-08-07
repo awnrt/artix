@@ -35,16 +35,16 @@ mkdir /mnt/home
 if [ "$_kernelflag" -eq 1 ]; then
   mkdir /mnt/boot/efi
   mount /dev/$boot_drive /mnt/boot/efi
-  sv up ntpd
+  rc-service ntpd start
   pacman -Sy --confirm
-  basestrap /mnt base runit seatd-runit linux-zen linux-zen-headers 
+  basestrap /mnt base openrc seatd-openrc linux-zen linux-zen-headers 
   fstabgen -U /mnt >> /mnt/etc/fstab
   cp post_chroot.sh /mnt
 elif [ "$_kernelflag" -eq 2 ]; then
   mount /dev/$boot_drive /mnt/boot
-  sv up ntpd
+  rc-service ntpd start
   pacman -Sy --confirm
-  basestrap /mnt base runit seatd-runit udev intel-ucode 
+  basestrap /mnt base openrc seatd-openrc udev intel-ucode 
   fstabgen -U /mnt >> /mnt/etc/fstab
   cp post_chroot.sh /mnt
 else
@@ -52,6 +52,7 @@ else
   exit 1
 fi
 
+export disk_drive
 export root_drive
 export boot_drive
 export _hostname
@@ -59,5 +60,6 @@ export _username
 export _rootpasswd
 export _userpasswd
 export _kernelflag
+export partitions
 
 artix-chroot /mnt ./post_chroot.sh

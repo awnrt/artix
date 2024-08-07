@@ -28,28 +28,25 @@ if [ "$_kernelflag" -eq 1 ]; then
 elif [ "$_kernelflag" -eq 2 ]; then
   pacman -S efibootmgr --noconfirm
   cd /usr/src/
-  curl -LO "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.10.2.tar.xz"
-  tar -xf "linux-6.10.2.tar.xz"
-  rm -f "linux-6.10.2.tar.xz"
-  cd "linux-6.10.2"
+  curl -LO "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.10.3.tar.xz"
+  tar -xf "linux-6.10.3.tar.xz"
+  rm -f "linux-6.10.3.tar.xz"
+  cd "linux-6.10.3"
   curl -LO "https://codeberg.org/awy/artix/raw/branch/minimal/.config"
-  sed -i -e '/^CONFIG_CMDLINE="root=PARTUUID=.*/c\' -e "CONFIG_CMDLINE=\"root=PARTUUID=$PARTUUID_ROOT\"" .config
-  mkdir /etc/modules-load.d
-  cat <<EOL >> /etc/modules-load.d/video.conf
-  nvidia
-  nvidia_modeset
-  nvidia_uvm
-  nvidia_drm
-EOL
+  sed -i -e '/^CONFIG_CMDLINE="root=PARTUUID=.*/c\' -e "CONFIG_CMDLINE=\"root=PARTUUID=$PARTUUID_ROOT init=/sbin/openrc-init nvidia_drm.modeset=1 nvidia_drm.fbdev=1 intel_iommu=on\"" .config
   pacman -S bc perl bison make diffutils gcc flex rsync --noconfirm
+  make oldconfig
   make menuconfig
-  #make -j$(nproc)
-  #make modules
-  #make modules_install
-  #make headers
-  #make headers_install
-  #cp arch/x86/boot/bzImage /boot/EFI/BOOT/BOOTX64.EFI
-  #efibootmgr -c -d /dev/nvme0n1 -p 1 -L "ARTIX" -l '\EFI\BOOT\BOOTX64.EFI'
+  make -j$(nproc)
+  make modules
+  make modules_install
+  make headers
+  make headers_install
+  mkdir -p /boot/EFI/BOOT
+  cp arch/x86/boot/bzImage /boot/EFI/BOOT/BOOTX64.EFI
+  ln -s /lib/modules/6.10.3/build/ /usr/src/linux
+  _diskdrivewop="${diskdrive%p}"
+  efibootmgr -c -d /dev/$_diskdrivewop -p ${partition_array[0]} -L "linux" -l '\EFI\BOOT\BOOTX64.EFI'
 else
   printf ${LIGHTRED}"Wrong kernelflag value.${NoColor}\n"
   exit 1
@@ -73,10 +70,10 @@ permit nopass keepenv :$_username
 permit nopass keepenv :root
 EOL
 
-pacman -S dhcpcd dhcpcd-runit --noconfirm
-ln -s /etc/runit/sv/dhcpcd /etc/runit/runsvdir/default
+pacman -S dhcpcd dhcpcd-openrc --noconfirm
+rc-update add dhcpcd default
 
-pacman -S nvidia-open-dkms nvidia-utils trizen --noconfirm
+pacman -S nvidia-open-dkms --noconfirm
 
 if [ "$_kernelflag" -eq 1 ]; then
   grub-mkconfig -o /boot/grub/grub.cfg
