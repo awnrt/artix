@@ -31,7 +31,8 @@ elif [ "$_kernelflag" -eq 2 ]; then
   curl -LO "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.10.3.tar.xz"
   tar -xf "linux-6.10.3.tar.xz"
   rm -f "linux-6.10.3.tar.xz"
-  cd "linux-6.10.3"
+  mv "linux-6.10.3" "linux"
+  cd "linux"
   curl -LO "https://codeberg.org/awy/artix/raw/branch/minimal/.config"
   sed -i -e '/^CONFIG_CMDLINE="root=PARTUUID=.*/c\' -e "CONFIG_CMDLINE=\"root=PARTUUID=$PARTUUID_ROOT init=/sbin/openrc-init nvidia_drm.modeset=1 nvidia_drm.fbdev=1 intel_iommu=on\"" .config
   pacman -S bc perl bison make diffutils gcc flex rsync --noconfirm
@@ -44,7 +45,6 @@ elif [ "$_kernelflag" -eq 2 ]; then
   make headers_install
   mkdir -p /boot/EFI/BOOT
   cp arch/x86/boot/bzImage /boot/EFI/BOOT/BOOTX64.EFI
-  ln -s /lib/modules/6.10.3/build/ /usr/src/linux
   _diskdrivewop="${diskdrive%p}"
   efibootmgr -c -d /dev/$_diskdrivewop -p ${partition_array[0]} -L "linux" -l '\EFI\BOOT\BOOTX64.EFI'
 else
