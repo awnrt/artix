@@ -28,10 +28,10 @@ if [ "$_kernelflag" -eq 1 ]; then
 elif [ "$_kernelflag" -eq 2 ]; then
   pacman -S efibootmgr --noconfirm
   cd /usr/src/
-  curl -LO "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.10.5.tar.xz"
-  tar -xf "linux-6.10.5.tar.xz"
-  rm -f "linux-6.10.5.tar.xz"
-  mv "linux-6.10.5" "linux"
+  curl -LO "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.10.6.tar.xz"
+  tar -xf "linux-6.10.6.tar.xz"
+  rm -f "linux-6.10.6.tar.xz"
+  mv "linux-6.10.6" "linux"
   cd "linux"
   curl -LO "https://codeberg.org/awy/artix/raw/branch/minimal/.config"
   sed -i -e '/^CONFIG_CMDLINE="root=PARTUUID=.*/c\' -e "CONFIG_CMDLINE=\"root=PARTUUID=$PARTUUID_ROOT init=/sbin/openrc-init nvidia_drm.modeset=1 nvidia_drm.fbdev=1 intel_iommu=on\"" .config
