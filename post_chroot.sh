@@ -80,7 +80,7 @@ if [ "$_kernelflag" -eq 1 ]; then
 fi
 
 # use dash as sh
-pacman -Sy dash
+pacman -Sy dash zsh
 ln -sfT dash /usr/bin/sh
 mkdir -p /etc/pacman.d/hooks
 cat <<EOL >> /etc/pacman.d/hooks/bash.hook
@@ -96,5 +96,7 @@ When = PostTransaction
 Exec = /usr/bin/ln -sfT dash /usr/bin/sh
 Depends = dash
 EOL
+
+chsh -s /bin/zsh $_username
 
 rm /post_chroot.sh

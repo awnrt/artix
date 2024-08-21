@@ -48,8 +48,8 @@ elif [ "$_kernelflag" -eq 2 ]; then
   rc-service ntpd start
   pacman -Sy --confirm
   basestrap /mnt base openrc seatd-openrc udev intel-ucode 
-  echo "UUID=$UUID_BOOT /boot vfat defaults,noatime 0 2
-  UUID=$UUID_ROOT / ext4 defaults,noatime 0 1" > /mnt/etc/fstab
+  echo "UUID=$UUID_BOOT /boot vfat defaults,noatime 0 2" > /mnt/etc/fstab
+  echo "UUID=$UUID_ROOT / ext4 defaults,noatime 0 1" >> /mnt/etc/fstab
   cp post_chroot.sh /mnt
 else
   printf ${LIGHTRED}"Wrong kernelflag value.${NoColor}\n"
