@@ -33,7 +33,7 @@ elif [ "$_kernelflag" -eq 2 ]; then
   rm -f "linux-6.10.6.tar.xz"
   mv "linux-6.10.6" "linux"
   cd "linux"
-  curl -LO "https://codeberg.org/awy/artix/raw/branch/minimal/.config"
+  curl -LO "https://codeberg.org/awy/artix/raw/branch/main/.config"
   sed -i -e '/^CONFIG_CMDLINE="root=PARTUUID=.*/c\' -e "CONFIG_CMDLINE=\"root=PARTUUID=$PARTUUID_ROOT init=/sbin/openrc-init nvidia_drm.modeset=1 nvidia_drm.fbdev=1 intel_iommu=on\"" .config
   pacman -S bc perl bison make diffutils gcc flex rsync --noconfirm
   make oldconfig
