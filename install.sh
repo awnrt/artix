@@ -32,9 +32,6 @@ mount /dev/$root_drive /mnt
 mkdir /mnt/boot
 mkdir /mnt/home
 
-UUID_ROOT=$(blkid -s UUID -o value $root_drive) 
-UUID_BOOT=$(blkid -s UUID -o value $boot_drive)
-
 if [ "$_kernelflag" -eq 1 ]; then
   mkdir /mnt/boot/efi
   mount /dev/$boot_drive /mnt/boot/efi
@@ -48,6 +45,8 @@ elif [ "$_kernelflag" -eq 2 ]; then
   rc-service ntpd start
   pacman -Sy --confirm
   basestrap /mnt base openrc seatd-openrc udev intel-ucode 
+  UUID_ROOT=$(blkid -s UUID -o value $root_drive) 
+  UUID_BOOT=$(blkid -s UUID -o value $boot_drive)
   echo "UUID=$UUID_BOOT /boot vfat defaults,noatime 0 2" > /mnt/etc/fstab
   echo "UUID=$UUID_ROOT / ext4 defaults,noatime 0 1" >> /mnt/etc/fstab
   cp post_chroot.sh /mnt
