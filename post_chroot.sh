@@ -53,7 +53,7 @@ else
 fi
 
 # use dash as sh
-pacman -Sy dash
+pacman -Sy dash zsh --noconfirm
 ln -sfT dash /usr/bin/sh
 mkdir -p /etc/pacman.d/hooks
 cat <<EOL >> /etc/pacman.d/hooks/bash.hook
@@ -70,7 +70,6 @@ Exec = /usr/bin/ln -sfT dash /usr/bin/sh
 Depends = dash
 EOL
 
-pacman -Sy zsh
 useradd -m -g users -G wheel,storage,power -s /bin/zsh $_username
 
 echo root:$_rootpasswd | chpasswd
