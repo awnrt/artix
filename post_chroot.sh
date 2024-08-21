@@ -52,7 +52,26 @@ else
   exit 1
 fi
 
-useradd -m -g users -G wheel,storage,power -s /bin/bash $_username
+# use dash as sh
+pacman -Sy dash
+ln -sfT dash /usr/bin/sh
+mkdir -p /etc/pacman.d/hooks
+cat <<EOL >> /etc/pacman.d/hooks/bash.hook
+[Trigger]
+Type = Package
+Operation = Install
+Operation = Upgrade
+Target = bash
+
+[Action]
+Description = Re-pointing /bin/sh symlink to dash...
+When = PostTransaction
+Exec = /usr/bin/ln -sfT dash /usr/bin/sh
+Depends = dash
+EOL
+
+pacman -Sy zsh
+useradd -m -g users -G wheel,storage,power -s /bin/zsh $_username
 
 echo root:$_rootpasswd | chpasswd
 echo $_username:$_userpasswd | chpasswd
@@ -78,25 +97,5 @@ pacman -S nvidia-open-dkms --noconfirm
 if [ "$_kernelflag" -eq 1 ]; then
   grub-mkconfig -o /boot/grub/grub.cfg
 fi
-
-# use dash as sh
-pacman -Sy dash zsh
-ln -sfT dash /usr/bin/sh
-mkdir -p /etc/pacman.d/hooks
-cat <<EOL >> /etc/pacman.d/hooks/bash.hook
-[Trigger]
-Type = Package
-Operation = Install
-Operation = Upgrade
-Target = bash
-
-[Action]
-Description = Re-pointing /bin/sh symlink to dash...
-When = PostTransaction
-Exec = /usr/bin/ln -sfT dash /usr/bin/sh
-Depends = dash
-EOL
-
-chsh -s /bin/zsh $_username
 
 rm /post_chroot.sh
