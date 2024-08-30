@@ -50,6 +50,7 @@ elif [ "$_kernelflag" -eq 2 ]; then
   echo "UUID=$UUID_BOOT /boot vfat defaults,noatime 0 2" > /mnt/etc/fstab
   echo "UUID=$UUID_ROOT / ext4 defaults,noatime 0 1" >> /mnt/etc/fstab
   cp post_chroot.sh /mnt
+  cp .config /mnt/usr/src
 else
   printf ${LIGHTRED}"Wrong kernelflag value.${NoColor}\n"
   exit 1
