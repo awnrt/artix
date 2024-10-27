@@ -90,7 +90,7 @@ EOL
 
 pacman -S dhcpcd dhcpcd-dinit --noconfirm
 
-pacman -S nvidia-open-dkms --noconfirm
+pacman -S nvidia-open-dkms nvidia-utils --noconfirm
 
 if [ "$_kernelflag" -eq 1 ]; then
   grub-mkconfig -o /boot/grub/grub.cfg
