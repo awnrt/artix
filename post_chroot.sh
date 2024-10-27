@@ -90,6 +90,8 @@ EOL
 
 pacman -S dhcpcd dhcpcd-dinit --noconfirm
 pacman -S dbus-dinit
+ln -sf /etc/dinit.d/dhcpcd /etc/dinit.d/boot.d/
+ln -sf /etc/dinit.d/dbus /etc/dinit.d/boot.d/
 
 pacman -S nvidia-open-dkms nvidia-utils --noconfirm
 
