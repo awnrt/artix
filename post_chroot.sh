@@ -89,6 +89,7 @@ permit nopass keepenv :root
 EOL
 
 pacman -S dhcpcd dhcpcd-dinit --noconfirm
+pacman -S dbus-dinit
 
 pacman -S nvidia-open-dkms nvidia-utils --noconfirm
 
