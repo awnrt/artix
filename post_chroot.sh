@@ -88,8 +88,7 @@ permit nopass keepenv :$_username
 permit nopass keepenv :root
 EOL
 
-pacman -S dhcpcd dhcpcd-dinit --noconfirm
-pacman -S dbus-dinit
+pacman -S dhcpcd dhcpcd-dinit dbus-dinit --noconfirm
 ln -sf /etc/dinit.d/dhcpcd /etc/dinit.d/boot.d/
 ln -sf /etc/dinit.d/dbus /etc/dinit.d/boot.d/
 
