@@ -35,16 +35,16 @@ mkdir /mnt/home
 if [ "$_kernelflag" -eq 1 ]; then
   mkdir /mnt/boot/efi
   mount /dev/$boot_drive /mnt/boot/efi
-  rc-service ntpd start
+  dinitctl start ntpd
   pacman -Sy --confirm
-  basestrap /mnt base openrc seatd-openrc linux-zen linux-zen-headers 
+  basestrap /mnt base dinit seatd-dinit linux-zen linux-zen-headers 
   fstabgen -U /mnt >> /mnt/etc/fstab
   cp post_chroot.sh /mnt
 elif [ "$_kernelflag" -eq 2 ]; then
   mount /dev/$boot_drive /mnt/boot
-  rc-service ntpd start
+  dinitctl start ntpd
   pacman -Sy --confirm
-  basestrap /mnt base openrc seatd-openrc udev intel-ucode 
+  basestrap /mnt base dinit seatd-dinit udev intel-ucode 
   UUID_ROOT=$(blkid -s UUID -o value /dev/$root_drive) 
   UUID_BOOT=$(blkid -s UUID -o value /dev/$boot_drive)
   echo "UUID=$UUID_BOOT /boot vfat defaults,noatime 0 2" > /mnt/etc/fstab
