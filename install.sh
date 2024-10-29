@@ -31,22 +31,24 @@ diskpart(){
   mkdir /mnt/home
 }
 
-zenKernel(){
+binKernel(){
   mkdir /mnt/boot/efi
   mount /dev/"$boot_drive" /mnt/boot/efi
   pacman -Sy --confirm
-  basestrap /mnt base dinit seatd-dinit linux-zen linux-zen-headers
-  fstabgen -U /mnt >> /mnt/etc/fstab
+  if [ "$choosenKernel" -eq 1 ]; then
+    basestrap /mnt base dinit seatd-dinit linux linux-headers
+  elif [ "$choosenKernel" -eq 2 ]; then
+    basestrap /mnt base dinit seatd-dinit linux-zen linux-zen-headers
+  else
+    printf "Wrong kernelflag value.\n"
+    exit 1
+  fi
 }
 
 customKernel(){
   mount /dev/$boot_drive /mnt/boot
   pacman -Sy --confirm
   basestrap /mnt base dinit seatd-dinit udev intel-ucode
-  UUID_ROOT=$(blkid -s UUID -o value /dev/$root_drive)
-  UUID_BOOT=$(blkid -s UUID -o value /dev/$boot_drive)
-  echo "UUID=$UUID_BOOT /boot vfat defaults,noatime 0 2" > /mnt/etc/fstab
-  echo "UUID=$UUID_ROOT / ext4 defaults,noatime 0 1" >> /mnt/etc/fstab
   cp .config /mnt/usr/src
 }
 
@@ -57,8 +59,8 @@ getUserData(){
   read -srp "Enter password for $username: " userpass
   echo
   read -rp "Enter hostname: " hostname
-  printf ${red}"Choose Linux Kernel:${normal}\n1. Zen kernel\n2. Custom kernel${normal}\nYour choose: "
-  read -r _kernelflag
+  printf ${red}"Choose Linux Kernel:${normal}\n1. Default kernel\n2. Zen kernel\n3. Custom kernel${normal}\nYour choose: "
+  read -r choosenKernel
   read -rp "Enter disk label (e.g. sda, nvme0n1p <- p is mandatory in nvme case): " disk_drive
   read -rp "Enter comma-separated partition numbers (e.g., 5,6 for 5 boot 6 root): " partitions
   IFS=',' read -r -a partition_array <<< "$partitions"
@@ -70,14 +72,16 @@ title
 getUserData
 diskpart
 
-if [ "$_kernelflag" -eq 1 ]; then
-zenKernel
-elif [ "$_kernelflag" -eq 2 ]; then
-customKernel
-else
- printf "Wrong kernelflag value.\n"
- exit 1
-fi
+case $choosenKernel in
+  1) binKernel ;;
+  2) binKernel ;;
+  3) customKernel ;;
+esac
+
+UUID_ROOT=$(blkid -s UUID -o value /dev/$root_drive)
+UUID_BOOT=$(blkid -s UUID -o value /dev/$boot_drive)
+echo "UUID=$UUID_BOOT /boot vfat defaults,noatime 0 2" > /mnt/etc/fstab
+echo "UUID=$UUID_ROOT / ext4 defaults,noatime 0 1" >> /mnt/etc/fstab
 
 _numBoot="${partition_array[0]}"
 export _numBoot
@@ -88,7 +92,7 @@ export hostname
 export username
 export rootpass
 export userpass
-export _kernelflag
+export choosenKernel
 
 cp post_chroot.sh /mnt
 artix-chroot /mnt ./post_chroot.sh
