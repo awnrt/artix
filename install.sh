@@ -50,7 +50,7 @@ binKernel(){
 customKernel(){
   mount /dev/$boot_drive /mnt/boot
   pacman -Sy --confirm
-  basestrap /mnt base dinit seatd-dinit udev intel-ucode
+  basestrap /mnt base dinit seatd-dinit udev 
   cp .config /mnt/usr/src
 }
 
@@ -93,6 +93,15 @@ case $choosenKernel in
   1) binKernel ;;
   2) binKernel ;;
   3) customKernel ;;
+esac
+
+case $cpuVendorID in
+  GenuineIntel)
+    basestrap /mnt intel-ucode ;;
+  AuthenticAMD)
+    basestrap /mnt amd-ucode ;;
+  *)
+    printf ${red}"Unsupported CPU Vendor. Possibly there is error in detection script.${normal}\n" && exit 1 ;;
 esac
 
 UUID_ROOT=$(blkid -s UUID -o value /dev/$root_drive)
