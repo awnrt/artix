@@ -52,8 +52,10 @@ customKernel(){
 
 getUserData(){
   read -srp "Enter root password: " rootpass
+  echo
   read -rp "Enter username: " username
   read -srp "Enter password for $username: " userpass
+  echo
   read -rp "Enter hostname: " hostname
   read -rp "Do you want default linux-zen kernel or custom one?\nType 1 for default and 2 for custom:" _kernelflag
   read -rp "Enter disk label (e.g. sda, nvme0n1p <- p is mandatory in nvme case):" disk_drive
@@ -65,6 +67,7 @@ getUserData(){
 
 title
 getUserData
+diskpart
 
 if [ "$_kernelflag" -eq 1 ]; then
 zenKernel
