@@ -1,6 +1,10 @@
+#!/bin/bash
+set -e
+
 ln -sf /usr/share/zoneinfo/Europe/Moscow /etc/localtime
 hwclock --systohc
 
+# different nvidia fixes
 mkdir -p /etc/modprobe.d/
 cat <<EOL >> /etc/modprobe.d/nvidia.conf
 options nvidia NVreg_UsePageAttributeTable=1
@@ -14,18 +18,27 @@ echo LANG=en_US.UTF-8 > /etc/locale.conf
 export LANG="en_US.UTF-8"
 export LC_COLLATE="C"
 
-echo $_hostname > /etc/hostname
+echo $hostname > /etc/hostname
 PARTUUID_ROOT=$(blkid -s PARTUUID -o value /dev/$root_drive)
 
-if [ "$_kernelflag" -eq 1 ]; then
+binKernel(){
   echo "options hid_apple fnmode=0" > /etc/modprobe.d/hid_apple.conf
   pacman -S grub os-prober efibootmgr --noconfirm  
   grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=grub
   GRUB_MODIFIED_LINE='GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet options root=PARTUUID='$PARTUUID_ROOT' rw nvidia-drm.modeset=1 modeset=1 fbdev=1 intel_iommu=on"'
   sed -i "s/GRUB_CMDLINE_LINUX_DEF\(.*\)/$GRUB_MODIFIED_LINE/g" /etc/default/grub
-  pacman -S linux-zen-headers --noconfirm
   sed -i -e 's/MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g' /etc/mkinitcpio.conf
-elif [ "$_kernelflag" -eq 2 ]; then
+  if [ "$choosenKernel" -eq 1 ]; then
+    pacman -S linux-headers --noconfirm
+  elif [ "$choosenKernel" -eq 2 ]; then
+    pacman -S linux-zen-headers --noconfirm
+  else
+    printf "Wrong kernelflag value.\n"
+    exit 1
+  fi
+}
+
+customKernel(){
   pacman -S efibootmgr --noconfirm
   cd /usr/src/
   curl -LO "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.11.5.tar.xz"
@@ -47,10 +60,13 @@ elif [ "$_kernelflag" -eq 2 ]; then
   cp arch/x86/boot/bzImage /boot/EFI/BOOT/BOOTX64.EFI
   _diskdrivewop="${disk_drive%p}"
   efibootmgr -c -d /dev/$_diskdrivewop -p $_numBoot -L "linux" -l '\EFI\BOOT\BOOTX64.EFI'
-else
-  printf ${LIGHTRED}"Wrong kernelflag value.${NoColor}\n"
-  exit 1
-fi
+}
+
+case $choosenKernel in
+  1) binKernel && grub-mkconfig -o /boot/grub/grub.cfg ;;
+  2) binKernel && grub-mkconfig -o /boot/grub/grub.cfg ;;
+  3) customKernel ;;
+esac
 
 # use dash as sh
 pacman -Sy dash zsh --noconfirm
@@ -70,17 +86,18 @@ Exec = /usr/bin/ln -sfT dash /usr/bin/sh
 Depends = dash
 EOL
 
-useradd -m -g users -G wheel,storage,power -s /bin/zsh $_username
+useradd -m -g users -G wheel,storage,power -s /bin/zsh $username
 
-echo root:$_rootpasswd | chpasswd
-echo $_username:$_userpasswd | chpasswd
+echo root:$rootpass | chpasswd
+echo $username:$userpass | chpasswd
 
 cat <<EOL >> /etc/hosts
 127.0.0.1 localhost
 ::1 localhost
-127.0.1.1 $_hostname.localdomain $_hostname
+127.0.1.1 $hostname.localdomain $hostname
 EOL
 
+# enable arch repos
 pacman -Sy --noconfirm
 pacman -S artix-archlinux-support --noconfirm
 echo "[extra]" >> /etc/pacman.conf
@@ -90,7 +107,7 @@ pacman -Sy --noconfirm
 pacman -S doas --noconfirm
 cat <<EOL >> /etc/doas.conf
 permit nopass :wheel
-permit nopass keepenv :$_username
+permit nopass keepenv :$username
 permit nopass keepenv :root
 EOL
 
@@ -99,9 +116,5 @@ ln -sf /etc/dinit.d/dhcpcd /etc/dinit.d/boot.d/
 ln -sf /etc/dinit.d/dbus /etc/dinit.d/boot.d/
 
 pacman -S nvidia-open-dkms nvidia-utils --noconfirm
-
-if [ "$_kernelflag" -eq 1 ]; then
-  grub-mkconfig -o /boot/grub/grub.cfg
-fi
 
 rm /post_chroot.sh
