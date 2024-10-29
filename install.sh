@@ -69,7 +69,10 @@ getUserData(){
   root_drive="$disk_drive${partition_array[1]}"
   boot_drive="$disk_drive${partition_array[0]}"
   while true; do
-    read -rp "CPU Vendor detected as ${green}$cpuVendorID${normal}, is that right? Y/N: " answer
+    title
+    clear
+    printf ${normal}"Your CPU Vendor detected as ${green}$cpuVendorID${normal}, is that right? Y/N:\n"
+    read -r answer
     case "$answer" in
       y|Y)
         break ;;
