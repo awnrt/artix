@@ -80,7 +80,7 @@ getUserData(){
         echo "Something wrong. Exiting..."
         exit 1 ;;
       *)
-        echo "Invalid response. Please enter 'y' or 'n'." ;;
+        echo "Invalid response. Please enter 'y' or 'n'." && sleep 3 ;;
     esac
   done
 }
