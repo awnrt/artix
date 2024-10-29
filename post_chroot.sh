@@ -75,6 +75,12 @@ useradd -m -g users -G wheel,storage,power -s /bin/zsh $_username
 echo root:$_rootpasswd | chpasswd
 echo $_username:$_userpasswd | chpasswd
 
+cat <<EOL >> /etc/hosts
+127.0.0.1 localhost
+::1 localhost
+127.0.1.1 $_hostname.localdomain $_hostname
+EOL
+
 pacman -Sy --noconfirm
 pacman -S artix-archlinux-support --noconfirm
 echo "[extra]" >> /etc/pacman.conf
