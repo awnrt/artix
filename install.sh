@@ -37,15 +37,15 @@ if [ "$_kernelflag" -eq 1 ]; then
   mount /dev/$boot_drive /mnt/boot/efi
   dinitctl start ntpd
   pacman -Sy --confirm
-  basestrap /mnt base dinit seatd-dinit linux-zen linux-zen-headers 
+  basestrap /mnt base dinit seatd-dinit linux-zen linux-zen-headers
   fstabgen -U /mnt >> /mnt/etc/fstab
   cp post_chroot.sh /mnt
 elif [ "$_kernelflag" -eq 2 ]; then
   mount /dev/$boot_drive /mnt/boot
   dinitctl start ntpd
   pacman -Sy --confirm
-  basestrap /mnt base dinit seatd-dinit udev intel-ucode 
-  UUID_ROOT=$(blkid -s UUID -o value /dev/$root_drive) 
+  basestrap /mnt base dinit seatd-dinit udev intel-ucode
+  UUID_ROOT=$(blkid -s UUID -o value /dev/$root_drive)
   UUID_BOOT=$(blkid -s UUID -o value /dev/$boot_drive)
   echo "UUID=$UUID_BOOT /boot vfat defaults,noatime 0 2" > /mnt/etc/fstab
   echo "UUID=$UUID_ROOT / ext4 defaults,noatime 0 1" >> /mnt/etc/fstab
