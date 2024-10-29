@@ -39,17 +39,19 @@ binKernel(){
 }
 
 customKernel(){
+  latestKernel=$(curl -s https://www.kernel.org/ | grep -A 1 'latest_link' | grep -oP '[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)
+  majorVersion=$(echo $latestKernel | cut -d'.' -f1)
   pacman -S efibootmgr --noconfirm
   cd /usr/src/
-  curl -LO "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-6.11.5.tar.xz"
-  tar -xf "linux-6.11.5.tar.xz"
-  rm -f "linux-6.11.5.tar.xz"
-  mv "linux-6.11.5" "linux"
+  curl -Lo /usr/src/linux.tar.xz "https://cdn.kernel.org/pub/linux/kernel/v$majorVersion.x/linux-$latestKernel.tar.xz"
+  tar -xf "linux.tar.xz"
+  rm -f "linux.tar.xz"
+  mv "linux-$latestKernel" "linux"
   cd "linux"
   mv /usr/src/.config .config
   sed -i -e '/^CONFIG_CMDLINE="root=PARTUUID=.*/c\' -e "CONFIG_CMDLINE=\"root=PARTUUID=$PARTUUID_ROOT init=/sbin/dinit-init nvidia_drm.modeset=1 nvidia_drm.fbdev=1 intel_iommu=on\"" .config
   pacman -S bc perl bison make diffutils gcc flex rsync --noconfirm
-  make oldconfig
+  make olddefconfig
   make menuconfig
   make -j$(nproc)
   make modules
@@ -58,8 +60,7 @@ customKernel(){
   make headers_install
   mkdir -p /boot/EFI/BOOT
   cp arch/x86/boot/bzImage /boot/EFI/BOOT/BOOTX64.EFI
-  _diskdrivewop="${disk_drive%p}"
-  efibootmgr -c -d /dev/$_diskdrivewop -p $_numBoot -L "linux" -l '\EFI\BOOT\BOOTX64.EFI'
+  efibootmgr -c -d /dev/${diskdrive%p} -p $_numBoot -L "linux" -l '\EFI\BOOT\BOOTX64.EFI'
 }
 
 case $choosenKernel in
