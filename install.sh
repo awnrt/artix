@@ -7,6 +7,8 @@ export normal="\033[0m"
 
 dinitctl start ntpd
 
+cpuVendorID=$(grep -m 1 'vendor_id' /proc/cpuinfo | awk '{print $3}')
+
 title() {
     clear
     echo -ne "${cyan}
@@ -66,6 +68,18 @@ getUserData(){
   IFS=',' read -r -a partition_array <<< "$partitions"
   root_drive="$disk_drive${partition_array[1]}"
   boot_drive="$disk_drive${partition_array[0]}"
+  while true; do
+    read -rp "CPU Vendor detected as ${green}$cpuVendorID${normal}, is that right? Y/N: " answer
+    case "$answer" in
+      y|Y)
+        break ;;
+      n|N)
+        echo "Something wrong. Exiting..."
+        exit 1 ;;
+      *)
+        echo "Invalid response. Please enter 'y' or 'n'." ;;
+    esac
+  done
 }
 
 title
@@ -96,3 +110,5 @@ export choosenKernel
 
 cp post_chroot.sh /mnt
 artix-chroot /mnt ./post_chroot.sh
+umount -R /mnt
+echo "Linux is successfully installed!"
