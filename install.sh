@@ -97,7 +97,9 @@ esac
 
 case $cpuVendorID in
   GenuineIntel)
-    basestrap /mnt intel-ucode ;;
+    basestrap /mnt intel-ucode
+    pacman -S iucode-tool
+    MICROCODE_PATH=$(iucode_tool -S -l /lib/firmware/intel-ucode/* 2>&1 | grep 'microcode bundle' | awk -F': ' '{print $2}' | cut -d'/' -f4-) ;;
   AuthenticAMD)
     basestrap /mnt amd-ucode ;;
   *)
