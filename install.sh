@@ -57,8 +57,8 @@ getUserData(){
   read -srp "Enter password for $username: " userpass
   echo
   read -rp "Enter hostname: " hostname
-  printf ${red}"Choose Linux Kernel: \n1. Linux Zen\n2.Custom${normal}\nYour choose: "
-  read -rp "Do you want default linux-zen kernel or custom one?\nType 1 for default and 2 for custom:" _kernelflag
+  printf ${red}"Choose Linux Kernel:${normal}\n1. Zen kernel\n2. Custom kernel${normal}\nYour choose: "
+  read -rp _kernelflag
   read -rp "Enter disk label (e.g. sda, nvme0n1p <- p is mandatory in nvme case):" disk_drive
   read -rp "Enter comma-separated partition numbers (e.g., 5,6 for 5 boot 6 root):" partitions
   IFS=',' read -r -a partition_array <<< "$partitions"
