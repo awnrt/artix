@@ -58,9 +58,9 @@ getUserData(){
   echo
   read -rp "Enter hostname: " hostname
   printf ${red}"Choose Linux Kernel:${normal}\n1. Zen kernel\n2. Custom kernel${normal}\nYour choose: "
-  read -rp _kernelflag
-  read -rp "Enter disk label (e.g. sda, nvme0n1p <- p is mandatory in nvme case):" disk_drive
-  read -rp "Enter comma-separated partition numbers (e.g., 5,6 for 5 boot 6 root):" partitions
+  read -r _kernelflag
+  read -rp "Enter disk label (e.g. sda, nvme0n1p <- p is mandatory in nvme case): " disk_drive
+  read -rp "Enter comma-separated partition numbers (e.g., 5,6 for 5 boot 6 root): " partitions
   IFS=',' read -r -a partition_array <<< "$partitions"
   root_drive="$disk_drive${partition_array[1]}"
   boot_drive="$disk_drive${partition_array[0]}"
