@@ -98,14 +98,17 @@ esac
 case $cpuVendorID in
   GenuineIntel)
     basestrap /mnt intel-ucode
-    pacman -S iucode-tool --noconfirm
-    CPUFAM=$(printf '%02x\n' $(lscpu | grep -E '^CPU family:' | awk '{print $3}'))
-    MODEL=$(printf '%02x\n' $(lscpu | grep -E '^Model:' | awk '{print $2}'))
-    STEPPING=$(printf '%02x\n' $(lscpu | grep -E '^Stepping:' | awk '{print $2}'))
-    MICROCODE_PATH="intel-ucode/$CPUFAM-$MODEL-$STEPPING"
-    THREAD_NUM=$(nproc)
-    sed -i "s#CONFIG_EXTRA_FIRMWARE=.*#CONFIG_EXTRA_FIRMWARE=\"$MICROCODE_PATH\"#g" /mnt/usr/src/.config
-    sed -i "s#CONFIG_NR_CPUS=.*#CONFIG_NR_CPUS=$THREAD_NUM#g" /mnt/usr/src/.config ;;
+    if [ "$choosenKernel" -eq 3 ]; then
+      pacman -S iucode-tool --noconfirm
+      CPUFAM=$(printf '%02x\n' $(lscpu | grep -E '^CPU family:' | awk '{print $3}'))
+      MODEL=$(printf '%02x\n' $(lscpu | grep -E '^Model:' | awk '{print $2}'))
+      STEPPING=$(printf '%02x\n' $(lscpu | grep -E '^Stepping:' | awk '{print $2}'))
+      MICROCODE_PATH="intel-ucode/$CPUFAM-$MODEL-$STEPPING"
+      THREAD_NUM=$(nproc)
+      sed -i "s#CONFIG_EXTRA_FIRMWARE=.*#CONFIG_EXTRA_FIRMWARE=\"$MICROCODE_PATH\"#g" /mnt/usr/src/.config
+      sed -i "s#CONFIG_NR_CPUS=.*#CONFIG_NR_CPUS=$THREAD_NUM#g" /mnt/usr/src/.config
+    fi
+    ;;
   AuthenticAMD)
     basestrap /mnt amd-ucode ;;
   *)
