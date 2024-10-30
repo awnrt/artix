@@ -99,8 +99,12 @@ case $cpuVendorID in
   GenuineIntel)
     basestrap /mnt intel-ucode
     pacman -S iucode-tool
-    MICROCODE_PATH=$(iucode_tool -S -l /lib/firmware/intel-ucode/* 2>&1 | grep 'microcode bundle' | awk -F': ' '{print $2}' | cut -d'/' -f4-) ;;
-  AuthenticAMD)
+    CPUFAM=$(printf '%02x\n' $(lscpu | grep -E 'CPU family:' | awk '{print $3}'))
+    MODEL=$(printf '%02x\n' $(lscpu | grep -E 'Model:' | awk '{print $2}'))
+    STEPPING=$(printf '%02x\n' $(lscpu | grep -E 'Stepping:' | awk '{print $2}'))
+    MICROCODE_PATH="intel-ucode/$CPUFAM-$MODEL-$STEPPING"
+    sed -i "s#CONFIG_EXTRA_FIRMWARE=.*#CONFIG_EXTRA_FIRMWARE=\"$MICROCODE_PATH\"#g" /mnt/usr/src/.config ;;
+    AuthenticAMD)
     basestrap /mnt amd-ucode ;;
   *)
     printf ${red}"Unsupported CPU Vendor. Possibly there is error in detection script.${normal}\n" && exit 1 ;;
