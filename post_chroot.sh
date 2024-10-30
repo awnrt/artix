@@ -49,7 +49,7 @@ customKernel(){
   mv "linux-$latestKernel" "linux"
   cd "linux"
   mv /usr/src/.config .config
-  sed -i -e '/^CONFIG_CMDLINE="root=PARTUUID=.*/c\' -e "CONFIG_CMDLINE=\"root=PARTUUID=$PARTUUID_ROOT init=/sbin/dinit-init nvidia_drm.modeset=1 nvidia_drm.fbdev=1 intel_iommu=on\"" .config
+  sed -i -e '/^CONFIG_CMDLINE="root=PARTUUID=.*/c\' -e "CONFIG_CMDLINE=\"root=PARTUUID=$PARTUUID_ROOT init=/sbin/dinit-init nvidia_drm.modeset=1 nvidia_drm.fbdev=1\"" .config
   pacman -S bc perl bison make diffutils gcc flex rsync --noconfirm
   make olddefconfig
   make menuconfig
