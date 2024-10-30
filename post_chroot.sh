@@ -60,7 +60,8 @@ customKernel(){
   make headers_install
   mkdir -p /boot/EFI/BOOT
   cp arch/x86/boot/bzImage /boot/EFI/BOOT/BOOTX64.EFI
-  efibootmgr -c -d /dev/${diskdrive%p} -p $_numBoot -L "linux" -l '\EFI\BOOT\BOOTX64.EFI'
+  _diskdrivewop="${disk_drive%p}"
+  efibootmgr -c -d /dev/$_diskdrivewop -p $_numBoot -L "linux" -l '\EFI\BOOT\BOOTX64.EFI'
 }
 
 case $choosenKernel in
