@@ -98,7 +98,7 @@ esac
 case $cpuVendorID in
   GenuineIntel)
     basestrap /mnt intel-ucode
-    pacman -S iucode-tool
+    pacman -S iucode-tool --noconfirm
     CPUFAM=$(printf '%02x\n' $(lscpu | grep -E '^CPU family:' | awk '{print $3}'))
     MODEL=$(printf '%02x\n' $(lscpu | grep -E '^Model:' | awk '{print $2}'))
     STEPPING=$(printf '%02x\n' $(lscpu | grep -E '^Stepping:' | awk '{print $2}'))
