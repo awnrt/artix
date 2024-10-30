@@ -103,8 +103,10 @@ case $cpuVendorID in
     MODEL=$(printf '%02x\n' $(lscpu | grep -E '^Model:' | awk '{print $2}'))
     STEPPING=$(printf '%02x\n' $(lscpu | grep -E '^Stepping:' | awk '{print $2}'))
     MICROCODE_PATH="intel-ucode/$CPUFAM-$MODEL-$STEPPING"
-    sed -i "s#CONFIG_EXTRA_FIRMWARE=.*#CONFIG_EXTRA_FIRMWARE=\"$MICROCODE_PATH\"#g" /mnt/usr/src/.config ;;
-    AuthenticAMD)
+    THREAD_NUM=$(nproc)
+    sed -i "s#CONFIG_EXTRA_FIRMWARE=.*#CONFIG_EXTRA_FIRMWARE=\"$MICROCODE_PATH\"#g" /mnt/usr/src/.config
+    sed -i "s#CONFIG_NR_CPUS=.*#CONFIG_NR_CPUS=$THREAD_NUM#g" /mnt/usr/src/.config ;;
+  AuthenticAMD)
     basestrap /mnt amd-ucode ;;
   *)
     printf ${red}"Unsupported CPU Vendor. Possibly there is error in detection script.${normal}\n" && exit 1 ;;
